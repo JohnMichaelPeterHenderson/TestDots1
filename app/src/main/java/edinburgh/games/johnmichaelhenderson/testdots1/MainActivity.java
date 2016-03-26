@@ -1,6 +1,5 @@
 package edinburgh.games.johnmichaelhenderson.testdots1;
 
-import android.app.ActionBar;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.content.ContextCompat;
@@ -43,20 +42,21 @@ public class MainActivity extends AppCompatActivity {
     private HashMap<Integer,Integer> yPositions = new HashMap<>();
 
     //Countdown
-    private final long startTime = 5000;
-    private final long intervalTime = 500;
+    private final long startTime = 1700;
+    private final double intervalTimeDouble = startTime/10;
+    private final long intervalTime = (long) intervalTimeDouble;
 
     private final int[] colourList =  new int[10];
 
     //counts how many times in a row app tries to find position.
     private int noAttempts = 0;
 
-    ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         setColours();
 
@@ -73,23 +73,19 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("Height value is " + String.valueOf(yScreenSize));
                 System.out.println("Width value is " + String.valueOf(xScreenSize));
 
-                initialiseButtonViews(rlayout, xScreenSize, yScreenSize);
-                rlayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
+                for(int i=0;i<4;i++){
+                    initialiseButtonView(rlayout, xScreenSize, yScreenSize);
+                    rlayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
             }
         });
-
-
-
     }
 
 
 
 
-    private void initialiseButtonViews(final RelativeLayout layout, final int maxWidth, final int maxHeight){
-        Log.i("Method called ", "initialiseButtonViews");
-        //initialises the first 4 buttons
-        for (int i = 0; i < 4; i++) {
+    private void initialiseButtonView(final RelativeLayout layout, final int maxWidth, final int maxHeight){
+        Log.i("Method called ", "initialiseButtonView");
             final Button bt = new Button(this);
 
             setButtonPosition(layout, maxWidth, maxHeight, bt);
@@ -100,24 +96,26 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onClick(View v) {
-                    if(Integer.valueOf(String.valueOf(bt.getText())) == nextButtonToBePressed) {
+                    if (Integer.valueOf(String.valueOf(bt.getText())) == nextButtonToBePressed) {
                         Log.i("Method called: onClick", "User clicked" + bt.getText());
                         nextButtonToBePressed++;
                         xPositions.remove(Integer.valueOf(String.valueOf(bt.getText())));
                         yPositions.remove(Integer.valueOf(String.valueOf(bt.getText())));
-                        setButtonPosition(layout, maxWidth, maxHeight, bt);
+                        layout.removeView(bt);
+                        initialiseButtonView(layout, xScreenSize, yScreenSize);
                         printHashMap();
-                    }else{
+                    } else {
                         layout.removeAllViews();
-                        nextButtonToBePressed =0;
-                        nextButtonToBeCreated=0;
+                        nextButtonToBePressed = 0;
+                        nextButtonToBeCreated = 0;
                         xPositions.clear();
                         yPositions.clear();
-                        initialiseButtonViews(layout, xScreenSize, yScreenSize);
+                        for (int i = 0; i < 4; i++) {
+                            initialiseButtonView(layout, xScreenSize, yScreenSize);
+                        }
                     }
                 }
             });
-        }
 
     }
 
@@ -142,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setTimer(final Button button) {
-
+        long newStartTime  = workOutStartTime();
         //set colour list and time
         new CountDownTimer(startTime, intervalTime)
         {
@@ -159,6 +157,13 @@ public class MainActivity extends AppCompatActivity {
                 //TODO end game
             }
         }.start();
+    }
+
+    private long workOutStartTime() {
+
+
+
+        return 0;
     }
 
     private void setRandomPositions(int maxWidthParam, int maxHeightParam, Button button ){
@@ -191,7 +196,6 @@ public class MainActivity extends AppCompatActivity {
             xPositions.put(nextButtonToBeCreated, xTestValue);
             yPositions.put(nextButtonToBeCreated, yTestValue);
         }
-
 
     }
 
